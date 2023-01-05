@@ -3,8 +3,8 @@ package builder
 import (
 	"database/sql"
 	"log"
-	"taskProcessor/internal/mysql/connection"
-	"taskProcessor/internal/mysql/dns"
+	"taskProcessor/internal/application/mysql/connection"
+	"taskProcessor/internal/application/mysql/dns"
 )
 
 /** Make query */

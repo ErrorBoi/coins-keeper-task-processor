@@ -1,9 +1,12 @@
 package main
 
 import (
-	"taskProcessor/internal/message_processor"
+	"taskProcessor/internal/application/transport/kafka"
+	"taskProcessor/internal/implementation/message_processor"
 )
 
 func main() {
-	message_processor.Start()
+	transport := kafka.NewInstance()
+
+	message_processor.Start(transport)
 }

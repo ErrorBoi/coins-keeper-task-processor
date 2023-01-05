@@ -1,8 +1,8 @@
 package dns
 
 import (
-	"taskProcessor/internal/config"
-	"taskProcessor/internal/mysql/connection"
+	"taskProcessor/internal/application/config"
+	"taskProcessor/internal/application/mysql/connection"
 )
 
 func GetDns() connection.Dns {

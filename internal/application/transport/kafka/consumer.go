@@ -4,12 +4,32 @@ import (
 	"fmt"
 	"log"
 
-	"taskProcessor/internal/config"
+	"taskProcessor/internal/application/config"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
 
-func InitConsumer(topics []string) *kafka.Consumer {
+type Kafka struct {
+	TaskTypeChat      string
+	TaskTypeChatReady string
+}
+
+func (this Kafka) AcceptRequest(callback func(message string) string) {
+	consumer := initConsumer([]string{this.TaskTypeChat})
+
+	startConsumer(consumer, func(message *kafka.Message) {
+		response := callback(string(message.Value))
+
+		produceMessage(&this.TaskTypeChatReady, response, message.Key)
+	})
+
+}
+
+func NewInstance() Kafka {
+	return Kafka{"chatTask", "chatTaskReady"}
+}
+
+func initConsumer(topics []string) *kafka.Consumer {
 	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
 		"bootstrap.servers": config.Get("KAFKA_ADDRESS"),
 		"group.id":          "test",
@@ -28,7 +48,7 @@ func InitConsumer(topics []string) *kafka.Consumer {
 	return consumer
 }
 
-func StartConsumer(consumer *kafka.Consumer, callback func(message *kafka.Message)) {
+func startConsumer(consumer *kafka.Consumer, callback func(message *kafka.Message)) {
 	for true {
 		event := consumer.Poll(100)
 		switch eventType := event.(type) {
@@ -42,7 +62,7 @@ func StartConsumer(consumer *kafka.Consumer, callback func(message *kafka.Messag
 	}
 }
 
-func ProduceMessage(topic *string, value string, key []byte) {
+func produceMessage(topic *string, value string, key []byte) {
 	producer, err := kafka.NewProducer(&kafka.ConfigMap{
 		"bootstrap.servers": config.Get("KAFKA_ADDRESS"),
 		"acks":              "all"})
@@ -68,7 +88,7 @@ func ProduceMessage(topic *string, value string, key []byte) {
 
 	if message.TopicPartition.Error != nil {
 		log.Fatalf("Delivery failed: %v\n", message.TopicPartition.Error)
-	} 
+	}
 
 	fmt.Printf("Delivered message to topic %s [%d] at offset %v\n",
 		*message.TopicPartition.Topic, message.TopicPartition.Partition, message.TopicPartition.Offset)

@@ -3,7 +3,7 @@ package client
 import (
 	"database/sql"
 	"log"
-	"taskProcessor/internal/mysql/client/builder"
+	"taskProcessor/internal/application/mysql/client/builder"
 )
 
 func SelectTableData(databaseName string, tableName string) []map[string]interface{} {
