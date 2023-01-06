@@ -13,6 +13,7 @@ func main() {
 	makeMessageProcessor().Start()
 }
 
+/** @todo DI Container **/
 func makeMessageProcessor() messageProcessorServices.MessageProcessorService {
 	transport := kafkaMessageProcessors.NewInstance()
 
