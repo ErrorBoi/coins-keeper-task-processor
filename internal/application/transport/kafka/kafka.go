@@ -9,27 +9,7 @@ import (
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
 
-type Kafka struct {
-	TaskTypeChat      string
-	TaskTypeChatReady string
-}
-
-func (this Kafka) AcceptRequest(callback func(message string) string) {
-	consumer := initConsumer([]string{this.TaskTypeChat})
-
-	startConsumer(consumer, func(message *kafka.Message) {
-		response := callback(string(message.Value))
-
-		produceMessage(&this.TaskTypeChatReady, response, message.Key)
-	})
-
-}
-
-func NewInstance() Kafka {
-	return Kafka{"chatTask", "chatTaskReady"}
-}
-
-func initConsumer(topics []string) *kafka.Consumer {
+func InitConsumer(topics []string) *kafka.Consumer {
 	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
 		"bootstrap.servers": config.Get("KAFKA_ADDRESS"),
 		"group.id":          "test",
@@ -48,7 +28,7 @@ func initConsumer(topics []string) *kafka.Consumer {
 	return consumer
 }
 
-func startConsumer(consumer *kafka.Consumer, callback func(message *kafka.Message)) {
+func StartConsumer(consumer *kafka.Consumer, callback func(message *kafka.Message)) {
 	for true {
 		event := consumer.Poll(100)
 		switch eventType := event.(type) {
@@ -62,7 +42,7 @@ func startConsumer(consumer *kafka.Consumer, callback func(message *kafka.Messag
 	}
 }
 
-func produceMessage(topic *string, value string, key []byte) {
+func ProduceMessage(topic *string, value string, key []byte) {
 	producer, err := kafka.NewProducer(&kafka.ConfigMap{
 		"bootstrap.servers": config.Get("KAFKA_ADDRESS"),
 		"acks":              "all"})

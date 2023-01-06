@@ -15,6 +15,7 @@ type Dns struct {
 	Password string
 	Host     string
 	Port     string
+	Database string
 }
 
 func GetConnection(dnsData Dns) *sql.DB {
@@ -23,7 +24,7 @@ func GetConnection(dnsData Dns) *sql.DB {
 		return openedConnection
 	}
 
-	pattern := "%s:%s@tcp(%s:%s)/"
+	pattern := "%s:%s@tcp(%s:%s)/%s"
 
 	dns := fmt.Sprintf(
 		pattern,
@@ -31,6 +32,7 @@ func GetConnection(dnsData Dns) *sql.DB {
 		dnsData.Password,
 		dnsData.Host,
 		dnsData.Port,
+		dnsData.Database,
 	)
 
 	connection, err := sql.Open("mysql", dns)
@@ -42,4 +44,8 @@ func GetConnection(dnsData Dns) *sql.DB {
 	openedConnection = connection
 
 	return openedConnection
+}
+
+func CloseConnection() {
+	
 }

@@ -12,6 +12,7 @@ func GetDns() connection.Dns {
 	payload.Password = config.Get("DBPASSWORD")
 	payload.Port = config.Get("DBPORT")
 	payload.User = config.Get("DBUSER")
+	payload.Database = config.Get("DBNAME")
 
 	return payload
 }
